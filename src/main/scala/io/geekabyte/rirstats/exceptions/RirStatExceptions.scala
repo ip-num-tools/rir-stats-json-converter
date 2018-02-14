@@ -1,0 +1,8 @@
+package io.geekabyte.rirstats.exceptions
+
+sealed trait ParseException
+object HeaderLineNotFoundException extends ParseException
+object UnknownRegistryException extends ParseException
+object UnknownResourceException extends ParseException
+object UnknownResourceStatusException extends ParseException
+case class RIRStateJsonConversionException(message:String) extends ParseException
