@@ -5,4 +5,5 @@ object HeaderLineNotFoundException extends ParseException
 object UnknownRegistryException extends ParseException
 object UnknownResourceException extends ParseException
 object UnknownResourceStatusException extends ParseException
+case class InvalidValue(exception:Throwable, message:String) extends ParseException
 case class RIRStateJsonConversionException(message:String) extends ParseException

@@ -4,7 +4,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.{Date => JDate}
 
-import io.geekabyte.rirstats.exceptions.ParseException
+import io.geekabyte.rirstats.exceptions.{InvalidValue, ParseException}
 import io.geekabyte.rirstats.models.{HeaderLine, RecordCount, RecordLine, Resource, RirStat, RirStatMeta, RirStatRecord, RirStatRecordEntry, RirStatResourceCount, RirStatSource, RirUtcOffset, SerialNumber, SummaryLine, asn, ipv4, ipv6}
 
 import scala.util.Try
@@ -68,17 +68,21 @@ object ConvertHelpers {
 
   private val formatter = new SimpleDateFormat("yyyyMMdd")
   val fromHeaderLine: String => Either[ParseException, HeaderLine] = (headerLine:String) => {
+    /**
+      * 2|ripencc|1515711599|113840|19830705|20180111|+0100
+      * 0|  1    |     2    |   3  |   4    |   5    |   6
+      */
     val components: Array[String] = headerLine.split('|')
     for {
+      version <- Try(components(0).toDouble).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), (version: Double) => Right(version))
       registry <- components(1).toRegistry
+      serial <- Try(components(2).toInt).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), serial => Right(serial))
+      recordCount <- Try(components(3).toInt).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), rcount => Right(rcount))
+      startDate <- Try(formatter.parse(components(4).toString)).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), formattedDate => Right(formattedDate))
+      endDate <- Try(formatter.parse(components(5).toString)).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), formattedDate => Right(formattedDate))
+      utcOffset <- Try(components(6).toString).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), utc => Right(utc))
     } yield {
-      val version: Double = components(0).toDouble
-      val serial: Int = components(2).toInt
-      val recordCount: RecordCount = RecordCount(components(3).toInt)
-      val startDate: JDate = formatter.parse(components(4).toString)
-      val endDate: JDate = formatter.parse(components(5).toString)
-      val utcOffset: String = components(6).toString
-      HeaderLine(version,registry,serial,recordCount,startDate,endDate,utcOffset)
+      HeaderLine(version,registry,serial,RecordCount(recordCount),startDate,endDate,utcOffset)
     }
   }
 

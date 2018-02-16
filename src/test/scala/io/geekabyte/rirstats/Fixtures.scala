@@ -2,7 +2,7 @@ package io.geekabyte.rirstats
 
 trait Fixtures {
 
-  def wellFormedStats =
+  def well_formed_stats =
     """
       |2|ripencc|1515711599|113840|19830705|20180111|+0100
       |ripencc|*|ipv4|*|65367|summary
@@ -13,7 +13,84 @@ trait Fixtures {
       |ripencc|EU|asn|137|1|19930901|allocated
     """.stripMargin
 
-  def wellFormedJson =
+  def stats_with_invalid_version =
+    """
+      |not_number|ripencc|1515711599|113840|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_registry =
+    """
+      |2|wrong|1515711599|113840|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_serial_number =
+    """
+      |2|ripencc|not_a_valid_serial|113840|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_resource_count =
+    """
+      |2|ripencc|1515711599|not_valid_resource|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_start_date =
+    """
+      |2|ripencc|1515711599|113840|not_valid|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_end_date =
+    """
+      |2|ripencc|1515711599|113840|19830705|not_valid|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def stats_with_invalid_time_zone =
+    """
+      |2|ripencc|1515711599|113840|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+
+  def well_formed_json =
     """
       |{
       |   "version":2.0,
@@ -67,7 +144,7 @@ trait Fixtures {
       |}
     """.stripMargin
 
-  def wellFormedExtendedFormat =
+  def well_formed_extended_format =
   """
     |2|ripencc|1514933999|176081|19830705|20180102|+0100
     |ripencc|*|ipv4|*|68487|summary
@@ -79,7 +156,7 @@ trait Fixtures {
     |ripencc||ipv6|2001:678:1d::|48||reserved
   """.stripMargin
 
-  def wellFormedExtendedJson =
+  def well_formed_extended_json =
   """
     |{
     |   "version":2.0,
