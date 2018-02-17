@@ -16,15 +16,9 @@ object ConvertHelpers {
   val fromCsvToModel: (Option[URL], HeaderLine, Seq[SummaryLine], Seq[RecordLine]) => RirStat =
     (source:Option[URL], headerLine: HeaderLine, summaryLines: Seq[SummaryLine], recordLines: Seq[RecordLine]) => {
 
-      val asnCount: Int = summaryLines.foldLeft(0)((result: Int, line: SummaryLine) => {
-        if (line.resourceType == asn) {result + line.count} else result
-      })
-      val ipv4Count: Int = summaryLines.foldLeft(0)((result: Int, line: SummaryLine) => {
-        if (line.resourceType == ipv4) {result + line.count} else result
-      })
-      val ipv6Count: Int = summaryLines.foldLeft(0)((result: Int, line: SummaryLine) => {
-        if (line.resourceType == ipv6) {result + line.count} else result
-      })
+      val asnCount : Int = summaryLines.filter(_.resourceType == asn).map(_.count).sum
+      val ipv4Count: Int = summaryLines.filter(_.resourceType == ipv4).map(_.count).sum
+      val ipv6Count: Int = summaryLines.filter(_.resourceType == ipv6).map(_.count).sum
 
       val records: Seq[RirStatRecordEntry] = recordLines.map((line: RecordLine) => {
         val rirStatRecord = RirStatRecord(
