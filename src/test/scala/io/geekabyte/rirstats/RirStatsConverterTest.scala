@@ -1,6 +1,6 @@
 package io.geekabyte.rirstats
 
-import io.geekabyte.rirstats.exceptions.ParseException
+import io.geekabyte.rirstats.exceptions.{InvalidValue, ParseException, UnknownRegistryException}
 import io.circe.parser._
 
 class RirStatsConverterTest extends UnitTest {
@@ -72,4 +72,29 @@ class RirStatsConverterTest extends UnitTest {
       case Right(_) => fail("exception expected")
     }
   }
+
+  "An rir stat with invalid registry value in summary" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_summary.invalid_registry_line)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid ip type value in summary" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_summary.invalid_ip_type_line)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid count value in summary" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_summary.invalid_count_line)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
 }

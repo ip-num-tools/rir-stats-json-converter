@@ -218,4 +218,35 @@ trait Fixtures {
     |}
   """.stripMargin
 
+  object stats_with_invalid_summary {
+    def invalid_registry_line =   """
+                                    |2|ripencc|1515711599|113840|19830705|20180111|+0100
+                                    |ripencc_not_a_registry|*|ipv4|*|65367|summary
+                                    |ripencc|*|asn|*|32265|summary
+                                    |ripencc|*|ipv6|*|16208|summary
+                                    |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+                                    |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+                                    |ripencc|EU|asn|137|1|19930901|allocated
+                                  """.stripMargin
+    def invalid_ip_type_line =   """
+                                    |2|ripencc|1515711599|113840|19830705|20180111|+0100
+                                    |ripencc|*|ipv4_not_valid|*|65367|summary
+                                    |ripencc|*|asn|*|32265|summary
+                                    |ripencc|*|ipv6|*|16208|summary
+                                    |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+                                    |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+                                    |ripencc|EU|asn|137|1|19930901|allocated
+                                  """.stripMargin
+
+    def invalid_count_line =   """
+                                   |2|ripencc|1515711599|113840|19830705|20180111|+0100
+                                   |ripencc|*|ipv4|*|65367_not_valid|summary
+                                   |ripencc|*|asn|*|32265|summary
+                                   |ripencc|*|ipv6|*|16208|summary
+                                   |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+                                   |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+                                   |ripencc|EU|asn|137|1|19930901|allocated
+                                 """.stripMargin
+  }
+
 }

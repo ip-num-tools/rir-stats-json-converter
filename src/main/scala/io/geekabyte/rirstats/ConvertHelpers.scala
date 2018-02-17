@@ -87,12 +87,16 @@ object ConvertHelpers {
   }
 
   val fromSummaryLine: String => Either[ParseException, SummaryLine] = (summaryLine:String) => {
+    /**
+      * ripencc|*|ipv4|*|65367|summary
+      * 0      |*|  2 |*|  4  | 5
+      */
     val components: Array[String] = summaryLine.split('|')
     for {
       registry <- components(0).toRegistry
       resourceType <- components(2).toResourceType
+      count <- Try(components(4).toInt).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), count => Right(count))
     } yield {
-      val count: Int = components(4).toInt
       models.SummaryLine(registry, resourceType, count)
     }
   }
