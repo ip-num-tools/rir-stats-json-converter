@@ -91,7 +91,7 @@ object ConvertHelpers {
       resourceType <- components(2).toResourceType
       count <- Try(components(4).toInt).fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), count => Right(count))
     } yield {
-      models.SummaryLine(registry, resourceType, count)
+      SummaryLine(registry, resourceType, count)
     }
   }
 
