@@ -97,4 +97,60 @@ class RirStatsConverterTest extends UnitTest {
     }
   }
 
+  "An rir stat with invalid registry value in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_registry_line)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid country code value in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_country_code)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid ip type in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_ip_type)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid ip value in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_ip_value)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid ip count in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_count_value)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid date in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_date_value)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
+  "An rir stat with invalid status in record" should "result in an exception" in {
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_records.invalid_status_value)
+    conversionResult match {
+      case Left(exceptions) => exceptions.exists(_.isInstanceOf[InvalidValue])
+      case Right(_) => fail("exception expected")
+    }
+  }
+
 }

@@ -1,5 +1,7 @@
 package io.geekabyte.rirstats
 
+import io.geekabyte.rirstats.models.{allocated, asn, ipv4, ipv6, ripencc}
+
 trait Fixtures {
 
   def well_formed_stats =
@@ -217,6 +219,97 @@ trait Fixtures {
     |   ]
     |}
   """.stripMargin
+
+
+  object stats_with_invalid_records {
+    /**
+      *    """
+      |2|ripencc|1515711599|113840|19830705|20180111|+0100
+      |ripencc|*|ipv4|*|65367|summary
+      |ripencc|*|asn|*|32265|summary
+      |ripencc|*|ipv6|*|16208|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+      |ripencc|EU|asn|137|1|19930901|allocated
+    """.stripMargin
+      */
+    def invalid_registry_line =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc_invalid|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_country_code =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR_not_valid|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_ip_type =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4_not_valid|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_ip_value =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0.0.2345|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_count_value =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0.0|1048576_invalid|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_date_value =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0.0|1048576|20100712_invalid|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def invalid_status_value =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0.0|1048576|20100712|allocated_invalid
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+  }
 
   object stats_with_invalid_summary {
     def invalid_registry_line =   """

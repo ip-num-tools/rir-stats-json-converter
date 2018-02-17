@@ -96,28 +96,51 @@ object ConvertHelpers {
   }
 
   val fromRecordLine: String => Either[ParseException, RecordLine] = (recordLine: String) => {
+    /**
+      * ripencc|EU|ipv6|2001:600::|32|19990826|allocated|647c2f10-dda2-4809-88e8-49024f31ad17
+      *   0    |1 | 2  |     3    |4 |    5   |  6      | 7 (optional opaque id)
+      *   or
+      * ripencc||ipv6|2001:601::|32||reserved
+      *     0  |1| 2 |     3    |4|5|  6
+      */
     val components: Array[String] = recordLine.split('|')
     for {
       registry <- components(0).toRegistry
       resourceType <- components(2).toResourceType
       resourceStatus <- components(6).toResourceStatus
+
+      countryCode <- Try(if (components(1).toString.equals("")) None else Some(components(1).toString))
+        .fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: Option[String]))
+
+      firstAddress <- Try(components(3).toString)
+        .fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: String))
+
+      count <- Try {
+        resourceType match {
+          case `ipv4` | `asn` => components(4).toInt
+          case `ipv6` => scala.math.pow(2, 128 - components(4).toInt)
+        }
+      }.fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: Double))
+
+      optionalPrefix <- Try {
+        resourceType match {
+          case `ipv6` => Some(s"/${components(4).toInt}")
+          case _ => None
+        }
+      }.fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: Option[String]))
+
+      dateValue <- Try(components(5).toString)
+        .fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: String))
+
+      assignedOrAllocatedDate <- Try(if (dateValue.equals("")) None else Some(formatter.parse(dateValue)))
+        .fold((ex:Throwable) => Left(InvalidValue(ex, ex.getMessage)), Right(_: Option[JDate]))
+
+      opaqueId <- Try(Some(components(7).toString)).fold({
+        case ex:IndexOutOfBoundsException => Right(None)
+        case ex => Left(InvalidValue(ex, ex.getMessage))
+      }, Right(_: Some[String]))
+
     } yield {
-      val countryCode: Option[String] = if (components(1).toString.equals("")) None else Some(components(1).toString)
-      val firstAddress: String = components(3).toString
-
-      val count: Double = resourceType match {
-        case `ipv4` | `asn` => components(4).toInt
-        case `ipv6` => scala.math.pow(2, 128 - components(4).toInt)
-      }
-
-      val optionalPrefix: Option[String] = resourceType match {
-        case `ipv6` => Some(s"/${components(4).toInt}")
-        case _ => None
-      }
-
-      val assignedOrAllocatedDate: Option[JDate] = Try(Some(formatter.parse(components(5).toString))).getOrElse(None)
-
-      val opaqueId = Try(Some(components(7).toString)).getOrElse(None)
       val resource = Resource(resourceType, firstAddress, count, optionalPrefix)
       RecordLine(registry, countryCode, resourceType, resourceStatus, assignedOrAllocatedDate, resource, opaqueId)
     }
