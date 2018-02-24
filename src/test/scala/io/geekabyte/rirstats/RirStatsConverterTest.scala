@@ -24,49 +24,49 @@ class RirStatsConverterTest extends UnitTest {
   }
 
   "An rir stat with invalid version" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_version.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_version.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid registry value" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_registry.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_registry.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid serial number" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_serial_number.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_serial_number.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid resource count" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_resource_count.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_resource_count.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid start date" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_start_date.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_start_date.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid end date" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_end_date.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_end_date.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")
     }
   }
   "An rir stat with invalid time zone" should "result in an exception" in {
-    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_time_zone.trim)
+    val conversionResult: Either[List[ParseException], String] = RirStatsConverter.convertExtended(stats_with_invalid_header.stats_with_invalid_time_zone.trim)
     conversionResult match {
       case Left(exceptions) => succeed
       case Right(_) => fail("exception expected")

@@ -50,12 +50,18 @@ case class RirStatRecord(`type`: ResourceType,
                          prefix: Option[String],
                          count: Double)
 
-case class RirStatRecordEntry(registry: Registry,
-                              country_code: Option[String],
+case class RirStatRecordEntry(country_code: Option[String],
                               date: Option[JDate],
                               status: ResourceStatus,
                               resource: RirStatRecord,
                               opaqueId: Option[String])
+
+case class RecordEntry(afrinic: Option[Seq[RirStatRecordEntry]],
+                       apnic: Option[Seq[RirStatRecordEntry]],
+                       arin: Option[Seq[RirStatRecordEntry]],
+                       iana: Option[Seq[RirStatRecordEntry]],
+                       lacnic: Option[Seq[RirStatRecordEntry]],
+                       ripencc: Option[Seq[RirStatRecordEntry]])
 
 case class RirStat(meta:Option[RirStatMeta],
                    version:Double,
@@ -66,7 +72,7 @@ case class RirStat(meta:Option[RirStatMeta],
                    end_date: JDate,
                    rir_utc_offset: RirUtcOffset,
                    resource_count: RirStatResourceCount,
-                   records: Seq[RirStatRecordEntry])
+                   records: RecordEntry)
 
 case class SerialNumber(serialNumber:Int) extends AnyVal
 case class RecordCount(recordCount:Int) extends AnyVal

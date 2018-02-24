@@ -15,81 +15,16 @@ trait Fixtures {
       |ripencc|EU|asn|137|1|19930901|allocated
     """.stripMargin
 
-  def stats_with_invalid_version =
+  def well_formed_extended_format =
     """
-      |not_number|ripencc|1515711599|113840|19830705|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_registry =
-    """
-      |2|wrong|1515711599|113840|19830705|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_serial_number =
-    """
-      |2|ripencc|not_a_valid_serial|113840|19830705|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_resource_count =
-    """
-      |2|ripencc|1515711599|not_valid_resource|19830705|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_start_date =
-    """
-      |2|ripencc|1515711599|113840|not_valid|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_end_date =
-    """
-      |2|ripencc|1515711599|113840|19830705|not_valid|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
-    """.stripMargin
-
-  def stats_with_invalid_time_zone =
-    """
-      |2|ripencc|1515711599|113840|19830705|20180111|+0100
-      |ripencc|*|ipv4|*|65367|summary
-      |ripencc|*|asn|*|32265|summary
-      |ripencc|*|ipv6|*|16208|summary
-      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
-      |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
-      |ripencc|EU|asn|137|1|19930901|allocated
+      |2|ripencc|1514933999|176081|19830705|20180102|+0100
+      |ripencc|*|ipv4|*|68487|summary
+      |ripencc|*|asn|*|36376|summary
+      |ripencc|*|ipv6|*|71218|summary
+      |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated|647c2f10-dda2-4809-88e8-49024f31ad17
+      |ripencc||ipv6|2001:601::|32||reserved
+      |ripencc||ipv6|2001:674::|30||reserved
+      |ripencc||ipv6|2001:678:1d::|48||reserved
     """.stripMargin
 
   def well_formed_json =
@@ -107,56 +42,43 @@ trait Fixtures {
       |      "ipv4":65367,
       |      "ipv6":16208
       |   },
-      |   "records":[
+      |  "records" : {
+      |    "ripencc" : [
       |      {
-      |         "registry":"ripencc",
-      |         "country_code":"FR",
-      |         "date":"20100712",
-      |         "status":"allocated",
-      |         "resource":{
-      |            "type":"ipv4",
-      |            "first_address":"2.0.0.0",
-      |            "count":1048576.0
-      |         }
+      |        "country_code" : "FR",
+      |        "date" : "20100712",
+      |        "status" : "allocated",
+      |        "resource" : {
+      |          "type" : "ipv4",
+      |          "first_address" : "2.0.0.0",
+      |          "count" : 1048576.0
+      |        }
       |      },
       |      {
-      |         "registry":"ripencc",
-      |         "country_code":"EU",
-      |         "date":"19990826",
-      |         "status":"allocated",
-      |         "resource":{
-      |            "type":"ipv6",
-      |            "first_address":"2001:600::",
-      |            "prefix":"/32",
-      |            "count":7.922816251426434E28
-      |         }
+      |        "country_code" : "EU",
+      |        "date" : "19990826",
+      |        "status" : "allocated",
+      |        "resource" : {
+      |          "type" : "ipv6",
+      |          "first_address" : "2001:600::",
+      |          "prefix" : "/32",
+      |          "count" : 7.922816251426434E28
+      |        }
       |      },
       |      {
-      |         "registry":"ripencc",
-      |         "country_code":"EU",
-      |         "date":"19930901",
-      |         "status":"allocated",
-      |         "resource":{
-      |            "type":"asn",
-      |            "first_address":"137",
-      |            "count":1.0
-      |         }
+      |        "country_code" : "EU",
+      |        "date" : "19930901",
+      |        "status" : "allocated",
+      |        "resource" : {
+      |          "type" : "asn",
+      |          "first_address" : "137",
+      |          "count" : 1.0
+      |        }
       |      }
-      |   ]
+      |    ]
+      |  }
       |}
     """.stripMargin
-
-  def well_formed_extended_format =
-  """
-    |2|ripencc|1514933999|176081|19830705|20180102|+0100
-    |ripencc|*|ipv4|*|68487|summary
-    |ripencc|*|asn|*|36376|summary
-    |ripencc|*|ipv6|*|71218|summary
-    |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated|647c2f10-dda2-4809-88e8-49024f31ad17
-    |ripencc||ipv6|2001:601::|32||reserved
-    |ripencc||ipv6|2001:674::|30||reserved
-    |ripencc||ipv6|2001:678:1d::|48||reserved
-  """.stripMargin
 
   def well_formed_extended_json =
   """
@@ -173,9 +95,8 @@ trait Fixtures {
     |      "ipv4":68487,
     |      "ipv6":71218
     |   },
-    |   "records":[
-    |      {
-    |         "registry":"ripencc",
+    |   "records":{
+    |     "ripencc": [{
     |         "country_code":"FR",
     |         "date":"20100712",
     |         "status":"allocated",
@@ -187,7 +108,6 @@ trait Fixtures {
     |         "opaqueId":"647c2f10-dda2-4809-88e8-49024f31ad17"
     |      },
     |      {
-    |         "registry":"ripencc",
     |         "status":"reserved",
     |         "resource":{
     |            "type":"ipv6",
@@ -197,7 +117,6 @@ trait Fixtures {
     |         }
     |      },
     |      {
-    |         "registry":"ripencc",
     |         "status":"reserved",
     |         "resource":{
     |            "type":"ipv6",
@@ -207,7 +126,6 @@ trait Fixtures {
     |         }
     |      },
     |      {
-    |         "registry":"ripencc",
     |         "status":"reserved",
     |         "resource":{
     |            "type":"ipv6",
@@ -215,12 +133,92 @@ trait Fixtures {
     |            "prefix":"/48",
     |            "count":1.2089258196146292E24
     |         }
-    |      }
-    |   ]
+    |      }]
+    |   }
     |}
   """.stripMargin
 
 
+  object stats_with_invalid_header {
+
+    def stats_with_invalid_version =
+      """
+        |not_number|ripencc|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_registry =
+      """
+        |2|wrong|1515711599|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_serial_number =
+      """
+        |2|ripencc|not_a_valid_serial|113840|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_resource_count =
+      """
+        |2|ripencc|1515711599|not_valid_resource|19830705|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_start_date =
+      """
+        |2|ripencc|1515711599|113840|not_valid|20180111|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_end_date =
+      """
+        |2|ripencc|1515711599|113840|19830705|not_valid|+0100
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+    def stats_with_invalid_time_zone =
+      """
+        |2|ripencc|1515711599|113840|19830705|20180111|+0100_invalid
+        |ripencc|*|ipv4|*|65367|summary
+        |ripencc|*|asn|*|32265|summary
+        |ripencc|*|ipv6|*|16208|summary
+        |ripencc|FR|ipv4|2.0.0.0|1048576|20100712|allocated
+        |ripencc|EU|ipv6|2001:600::|32|19990826|allocated
+        |ripencc|EU|asn|137|1|19930901|allocated
+      """.stripMargin
+
+  }
   object stats_with_invalid_records {
     /**
       *    """

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.{Date => JDate}
 
 import io.geekabyte.rirstats.exceptions.{InvalidValue, ParseException}
-import io.geekabyte.rirstats.models.{HeaderLine, RecordCount, RecordLine, Resource, RirStat, RirStatMeta, RirStatRecord, RirStatRecordEntry, RirStatResourceCount, RirStatSource, RirUtcOffset, SerialNumber, SummaryLine, asn, ipv4, ipv6}
+import io.geekabyte.rirstats.models.{HeaderLine, RecordCount, RecordEntry, RecordLine, Registry, Resource, RirStat, RirStatMeta, RirStatRecord, RirStatRecordEntry, RirStatResourceCount, RirStatSource, RirUtcOffset, SerialNumber, SummaryLine, afrinic, apnic, arin, asn, iana, ipv4, ipv6, lacnic, ripencc}
 
 import scala.util.Try
 
@@ -28,13 +28,26 @@ object ConvertHelpers {
           line.resource.count
         )
 
-        RirStatRecordEntry(line.registry, line.countryCode, line.date, line.resourceStatus, rirStatRecord, line.opaqueId)
+        RirStatRecordEntry(line.countryCode, line.date, line.resourceStatus, rirStatRecord, line.opaqueId)
       })
+
+      val registryToRecordLines: Map[Registry, Seq[RecordLine]] = recordLines.groupBy(_.registry)
+
+      val registryToRecords: Map[Registry, Seq[RirStatRecordEntry]] = registryToRecordLines.mapValues(recordLines => recordLines.map((line: RecordLine) => {
+        val rirStatRecord = RirStatRecord(
+          line.resourceType,
+          line.resource.firstAddress,
+          line.resource.prefix,
+          line.resource.count
+        )
+
+        RirStatRecordEntry(line.countryCode, line.date, line.resourceStatus, rirStatRecord, line.opaqueId)
+      })).withDefaultValue(List())
 
       source match {
         case Some(statSource) =>
           val sourceUrl: String = statSource.toString
-          RirStat(Some(RirStatMeta(source = Seq(RirStatSource(sourceUrl, s"${sourceUrl}.md5")))),
+          RirStat(Some(RirStatMeta(source = Seq(RirStatSource(sourceUrl, s"$sourceUrl.md5")))),
             headerLine.version,
             headerLine.registry,
             SerialNumber(headerLine.serial),
@@ -43,7 +56,14 @@ object ConvertHelpers {
             headerLine.endDate,
             RirUtcOffset(headerLine.utcOffset),
             RirStatResourceCount(asn = asnCount, ipv4 = ipv4Count, ipv6 = ipv6Count),
-            records
+            RecordEntry(
+              afrinic=registryToRecords(afrinic).headOption.map(_ => registryToRecords(afrinic)),
+              apnic=registryToRecords(apnic).headOption.map(_ => registryToRecords(apnic)),
+              arin=registryToRecords(arin).headOption.map(_ => registryToRecords(arin)),
+              iana=registryToRecords(iana).headOption.map(_ => registryToRecords(iana)),
+              lacnic=registryToRecords(lacnic).headOption.map(_ => registryToRecords(lacnic)),
+              ripencc=registryToRecords(ripencc).headOption.map(_ => registryToRecords(ripencc))
+            )
           )
         case None =>
           RirStat(None,
@@ -55,7 +75,14 @@ object ConvertHelpers {
             headerLine.endDate,
             RirUtcOffset(headerLine.utcOffset),
             RirStatResourceCount(asn = asnCount, ipv4 = ipv4Count, ipv6 = ipv6Count),
-            records
+            RecordEntry(
+              afrinic=registryToRecords(afrinic).headOption.map(_ => registryToRecords(afrinic)),
+              apnic=registryToRecords(apnic).headOption.map(_ => registryToRecords(apnic)),
+              arin=registryToRecords(arin).headOption.map(_ => registryToRecords(arin)),
+              iana=registryToRecords(iana).headOption.map(_ => registryToRecords(iana)),
+              lacnic=registryToRecords(lacnic).headOption.map(_ => registryToRecords(lacnic)),
+              ripencc=registryToRecords(ripencc).headOption.map(_ => registryToRecords(ripencc))
+            )
           )
       }
     }

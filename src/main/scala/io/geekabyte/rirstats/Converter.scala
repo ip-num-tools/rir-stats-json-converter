@@ -47,8 +47,7 @@ object RirStatsConverter {
   private def applyConversion(lines: List[String],
                               source: Option[URL],
                               recordLineChecker: (String => Boolean),
-                              validator: RIRStatValidator): Either[List[ParseException],
-    String] = {
+                              validator: RIRStatValidator): Either[List[ParseException], String] = {
     val headerLine: Either[List[ParseException], HeaderLine] = lines.headOption match {
       case Some(header) => fromHeaderLine(header) match {
         case Right(line) => Right(line)
