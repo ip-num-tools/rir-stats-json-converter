@@ -11,6 +11,7 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.4" % Test,
       "com.networknt" % "json-schema-validator" % "0.1.13",
+      "org.typelevel" %% "cats-core" % "1.1.0",
       "geekabyte.io" %% "rir_statistics_exchange_schema" % "0.1"
     ),
     libraryDependencies ++= Seq(
@@ -24,4 +25,9 @@ lazy val root = (project in file(".")).
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
 addCompilerPlugin(
   "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
+  )
+
+scalacOptions ++= Seq(
+  "-Xfatal-warnings",
+  "-Ypartial-unification"
   )
