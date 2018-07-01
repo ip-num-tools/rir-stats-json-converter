@@ -96,28 +96,27 @@ object RirStatsConverter {
   private def convertToModel(lines: List[String],
                               source: Option[URL],
                               recordLineChecker: (String => Boolean)): Validated[List[ParseException], RirStat] = {
-    val headerLine: Validated[List[ParseException], HeaderLine] = lines.headOption match {
-      case Some(header) => fromHeaderLine(header)
-      case None => Validated.invalid(List(HeaderLineNotFoundException()))
-    }
 
-    val summaryLines: Validated[List[ParseException], List[SummaryLine]] = lines
-        .collect({ case x if isSummaryLine(x) => x })
-        .traverse(fromSummaryLine)
-
-
-    val recordLines: Validated[List[ParseException], List[RecordLine]] = lines
-        .collect({ case x if recordLineChecker(x) => x })
-        .traverse(fromRecordLine)
-
-
-    val nonValidLines = lines.drop(1).filterNot((line) => {
+    val nonValidLines: List[String] = lines.drop(1).filterNot((line: String) => {
       isSummaryLine(line) || recordLineChecker(line)
     })
 
     if (nonValidLines.nonEmpty) {
       List(InvalidLine(nonValidLines)).invalid[RirStat]
     } else {
+      val headerLine: Validated[List[ParseException], HeaderLine] = lines.headOption match {
+        case Some(header) => fromHeaderLine(header)
+        case None => Validated.invalid(List(HeaderLineNotFoundException()))
+      }
+
+      val summaryLines: Validated[List[ParseException], List[SummaryLine]] = lines
+        .collect({ case x if isSummaryLine(x) => x })
+        .traverse(fromSummaryLine)
+
+      val recordLines: Validated[List[ParseException], List[RecordLine]] = lines
+        .collect({ case x if recordLineChecker(x) => x })
+        .traverse(fromRecordLine)
+
       (headerLine, summaryLines, recordLines).mapN((header,summary, record) => fromCsvToModel(source, header,summary,record))
     }
   }
