@@ -18,14 +18,11 @@ lazy val root = (project in file(".")).
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic",
       "io.circe" %% "circe-parser")
-      .map(_ % "0.9.1"),
-    wartremoverErrors ++= Warts.unsafe
+      .map(_ % "0.9.1")
   )
 
 resolvers += "emueller-bintray" at "http://dl.bintray.com/emueller/maven"
-addCompilerPlugin(
-  "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
-  )
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
 
 scalacOptions ++= Seq(
   "-Xfatal-warnings",
