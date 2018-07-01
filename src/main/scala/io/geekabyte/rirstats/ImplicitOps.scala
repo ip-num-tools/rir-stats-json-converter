@@ -1,7 +1,7 @@
 package io.geekabyte.rirstats
 
-import cats.data.{Validated, ValidatedNel}
-import io.geekabyte.rirstats.exceptions.{ParseException, UnknownRegistryException, UnknownResourceException, UnknownResourceStatusException}
+import cats.data.{NonEmptyList, Validated}
+import io.geekabyte.rirstats.exceptions.{UnknownRegistryException, UnknownResourceException, UnknownResourceStatusException}
 import io.geekabyte.rirstats.models.{Registry, ResourceStatus, ResourceType, afrinic, allocated, apnic, arin, asn, assigned, available, iana, ipv4, ipv6, lacnic, reserved, ripencc}
 import cats.implicits._
 
@@ -57,26 +57,26 @@ object ResourceStatusPattern {
 
 object ImplicitOps {
   implicit class StringRegistry(arg:String) {
-    def toRegistry: Validated[List[UnknownRegistryException], Registry] = {
+    def toRegistry: Validated[NonEmptyList[UnknownRegistryException], Registry] = {
       arg match {
-        case RegistryPatterns(registry) => registry.valid[List[UnknownRegistryException]]
-        case _ => List(UnknownRegistryException()).invalid[Registry]
+        case RegistryPatterns(registry) => registry.valid[NonEmptyList[UnknownRegistryException]]
+        case _ => NonEmptyList.of(UnknownRegistryException()).invalid[Registry]
       }
     }
   }
   implicit class StringResourceType(arg: String) {
-    def toResourceType: Validated[List[UnknownResourceException], ResourceType] = {
+    def toResourceType: Validated[NonEmptyList[UnknownResourceException], ResourceType] = {
       arg match {
-        case ResourceTypesPatterns(resourceType) => resourceType.valid[List[UnknownResourceException]]
-        case _ => List(UnknownResourceException()).invalid[ResourceType]
+        case ResourceTypesPatterns(resourceType) => resourceType.valid[NonEmptyList[UnknownResourceException]]
+        case _ => NonEmptyList.of(UnknownResourceException()).invalid[ResourceType]
       }
     }
   }
   implicit class StringResourceStatus(arg: String) {
-    def toResourceStatus: Validated[List[UnknownResourceStatusException], ResourceStatus] = {
+    def toResourceStatus: Validated[NonEmptyList[UnknownResourceStatusException], ResourceStatus] = {
       arg match {
-        case ResourceStatusPattern(resourceStatus) => resourceStatus.valid[List[UnknownResourceStatusException]]
-        case _ => List(UnknownResourceStatusException()).invalid[ResourceStatus]
+        case ResourceStatusPattern(resourceStatus) => resourceStatus.valid[NonEmptyList[UnknownResourceStatusException]]
+        case _ => NonEmptyList.of(UnknownResourceStatusException()).invalid[ResourceStatus]
       }
     }
   }

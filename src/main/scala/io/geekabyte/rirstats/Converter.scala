@@ -3,7 +3,7 @@ package io.geekabyte.rirstats
 
 import java.net.URL
 
-import cats.data.Validated
+import cats.data.{NonEmptyList, Validated}
 import cats.implicits._
 import io.circe.generic.auto._
 import io.circe.syntax._
@@ -31,7 +31,7 @@ object RirStatsConverter {
   private val isRecordLine:String => Boolean = (lines:String) => lines.matches(recordLineRegex)
   private val isExtendedRecordLine:String => Boolean = (lines:String) => lines.matches(recordLineExtendedRegex)
 
-  def validate(stat: RirStat, validator: RIRStatValidator): Validated[List[ParseException], String] = {
+  def validate(stat: RirStat, validator: RIRStatValidator): Validated[NonEmptyList[ParseException], String] = {
       import io.circe.Printer
       import io.geekabyte.rirstats.JsonEncoders._
       val printer = Printer.noSpaces.copy(dropNullValues = true)
@@ -39,7 +39,7 @@ object RirStatsConverter {
       validator.validate(statAsJsonString)
   }
 
-  def convert(content:String): Either[List[ParseException], String] = {
+  def convert(content:String): Either[NonEmptyList[ParseException], String] = {
     val lines: List[String] = content.split(System.lineSeparator).toList
     for {
       rirStat <- convertToModel(lines, None, isRecordLine).toEither
@@ -47,7 +47,7 @@ object RirStatsConverter {
     } yield result
   }
 
-  def convert(source:URL): Either[List[ParseException], String] = {
+  def convert(source:URL): Either[NonEmptyList[ParseException], String] = {
     val lines: List[String] = scala.io.Source.fromURL(source).getLines().toList
     for {
       rirStat <- convertToModel(lines, Some(source), isRecordLine).toEither
@@ -77,7 +77,7 @@ object RirStatsConverter {
 ////    } yield result
 //  }
 
-  def convertExtended(source:URL): Either[List[ParseException], String] = {
+  def convertExtended(source:URL): Either[NonEmptyList[ParseException], String] = {
     val lines: List[String] = scala.io.Source.fromURL(source).getLines().toList
     for {
       rirStat <- convertToModel(lines, Some(source), isExtendedRecordLine).toEither
@@ -85,7 +85,7 @@ object RirStatsConverter {
     } yield result
   }
 
-  def convertExtended(content:String): Either[List[ParseException], String] = {
+  def convertExtended(content:String): Either[NonEmptyList[ParseException], String] = {
     val lines: List[String] = content.split(System.lineSeparator).toList
     for {
       rirStat <- convertToModel(lines, None, isExtendedRecordLine).toEither
@@ -95,25 +95,25 @@ object RirStatsConverter {
 
   private def convertToModel(lines: List[String],
                               source: Option[URL],
-                              recordLineChecker: (String => Boolean)): Validated[List[ParseException], RirStat] = {
+                              recordLineChecker: (String => Boolean)): Validated[NonEmptyList[ParseException], RirStat] = {
 
     val nonValidLines: List[String] = lines.drop(1).filterNot((line: String) => {
       isSummaryLine(line) || recordLineChecker(line)
     })
 
     if (nonValidLines.nonEmpty) {
-      List(InvalidLine(nonValidLines)).invalid[RirStat]
+      NonEmptyList.of(InvalidLine(nonValidLines)).invalid[RirStat]
     } else {
-      val headerLine: Validated[List[ParseException], HeaderLine] = lines.headOption match {
+      val headerLine: Validated[NonEmptyList[ParseException], HeaderLine] = lines.headOption match {
         case Some(header) => fromHeaderLine(header)
-        case None => Validated.invalid(List(HeaderLineNotFoundException()))
+        case None => Validated.invalid(NonEmptyList.of(HeaderLineNotFoundException()))
       }
 
-      val summaryLines: Validated[List[ParseException], List[SummaryLine]] = lines
+      val summaryLines: Validated[NonEmptyList[ParseException], List[SummaryLine]] = lines
         .collect({ case x if isSummaryLine(x) => x })
         .traverse(fromSummaryLine)
 
-      val recordLines: Validated[List[ParseException], List[RecordLine]] = lines
+      val recordLines: Validated[NonEmptyList[ParseException], List[RecordLine]] = lines
         .collect({ case x if recordLineChecker(x) => x })
         .traverse(fromRecordLine)
 

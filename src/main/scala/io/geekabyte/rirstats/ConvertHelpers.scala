@@ -4,7 +4,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.{Date => JDate}
 
-import cats.data.Validated
+import cats.data.{NonEmptyList, Validated}
 import cats.implicits._
 import io.geekabyte.rirstats.exceptions.{InvalidValue, ParseException, UnknownRegistryException, UnknownResourceException, UnknownResourceStatusException}
 import io.geekabyte.rirstats.models.{HeaderLine, RecordCount, RecordEntry, RecordLine, Registry, Resource, ResourceStatus, ResourceType, RirStat, RirStatMeta, RirStatRecord, RirStatRecordEntry, RirStatResourceCount, RirStatSource, RirUtcOffset, SerialNumber, SummaryLine, afrinic, apnic, arin, asn, iana, ipv4, ipv6, lacnic, ripencc}
@@ -91,7 +91,7 @@ object ConvertHelpers {
 
   private val formatter = new SimpleDateFormat("yyyyMMdd")
 
-  val fromHeaderLine: String => Validated[List[ParseException], HeaderLine] = (headerLine:String) => {
+  val fromHeaderLine: String => Validated[NonEmptyList[ParseException], HeaderLine] = (headerLine:String) => {
     /**
       * version|registry|serial|records|startdate|enddate|UTCoffset
       * 2|ripencc|1515711599|113840|19830705|20180111|+0100
@@ -99,37 +99,55 @@ object ConvertHelpers {
       */
     val components: Array[String] = headerLine.split('|')
 
-    val version: Validated[List[InvalidValue], Double] = Validated.fromEither {
+    val version: Validated[NonEmptyList[InvalidValue], Double] = Validated.fromEither {
       Try(components(0).toDouble)
-        .fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), (version: Double) => Right(version))
+        .fold(
+          (ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+          (version: Double) => Right(version))
     }
 
-    val registry: Validated[List[UnknownRegistryException], Registry] = components(1).toRegistry
+    val registry: Validated[NonEmptyList[UnknownRegistryException], Registry] = components(1).toRegistry
 
-    val serial: Validated[List[InvalidValue], Int] = Validated.fromEither {
-      Try(components(2).toInt).fold((ex:Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), serial => Right(serial))
+    val serial: Validated[NonEmptyList[InvalidValue], Int] = Validated.fromEither {
+      Try(components(2).toInt)
+        .fold(
+          (ex:Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+          (serial: Int) => Right(serial)
+        )
     }
 
-    val recordCount: Validated[List[InvalidValue], RecordCount] = Validated.fromEither {
-      Try(components(3).toInt).fold((ex:Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), rcount => Right(RecordCount(rcount)))
+    val recordCount: Validated[NonEmptyList[InvalidValue], RecordCount] = Validated.fromEither {
+      Try(components(3).toInt).fold(
+        (ex:Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+        (rcount: Int) => Right(RecordCount(rcount))
+      )
     }
 
-    val startDate: Validated[List[InvalidValue], JDate] = Validated.fromEither {
-      Try(formatter.parse(components(4).toString)).fold((ex:Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), formattedDate => Right(formattedDate))
+    val startDate: Validated[NonEmptyList[InvalidValue], JDate] = Validated.fromEither {
+      Try(formatter.parse(components(4).toString)).fold(
+        (ex:Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+        (formattedDate: JDate) => Right(formattedDate)
+      )
     }
 
-    val endDate: Validated[List[InvalidValue], JDate] = Validated.fromEither {
-      Try(formatter.parse(components(5).toString)).fold((ex:Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), formattedDate => Right(formattedDate))
+    val endDate: Validated[NonEmptyList[InvalidValue], JDate] = Validated.fromEither {
+      Try(formatter.parse(components(5).toString)).fold(
+        (ex:Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+        (formattedDate: JDate) => Right(formattedDate)
+      )
     }
 
-    val utcOffset: Validated[List[InvalidValue], String] = Validated.fromEither {
-      Try(components(6).toString).fold((ex:Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), utc => Right(utc))
+    val utcOffset: Validated[NonEmptyList[InvalidValue], String] = Validated.fromEither {
+      Try(components(6).toString).fold(
+        (ex:Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+        utc => Right(utc)
+      )
     }
 
     (version, registry, serial, recordCount, startDate, endDate, utcOffset).mapN(HeaderLine)
   }
 
-  val fromSummaryLine: String => Validated[List[ParseException], SummaryLine] = (summaryLine:String) => {
+  val fromSummaryLine: String => Validated[NonEmptyList[ParseException], SummaryLine] = (summaryLine:String) => {
     /**
       * registry|*|type|*|count|summary
       * ripencc |*|ipv4|*|65367|summary
@@ -137,16 +155,16 @@ object ConvertHelpers {
       */
     val components: Array[String] = summaryLine.split('|')
 
-    val registry: Validated[List[UnknownRegistryException], Registry] = components(0).toRegistry
-    val resourceType: Validated[List[UnknownResourceException], ResourceType] = components(2).toResourceType
-    val count: Validated[List[InvalidValue], Int] = Validated.fromEither {
-      Try(components(4).toInt).fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), count => Right(count))
+    val registry: Validated[NonEmptyList[UnknownRegistryException], Registry] = components(0).toRegistry
+    val resourceType: Validated[NonEmptyList[UnknownResourceException], ResourceType] = components(2).toResourceType
+    val count: Validated[NonEmptyList[InvalidValue], Int] = Validated.fromEither {
+      Try(components(4).toInt).fold((ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))), count => Right(count))
     }
 
     (registry, resourceType, count).mapN(SummaryLine)
   }
 
-  val fromRecordLine: String => Validated[List[ParseException], RecordLine] = (recordLine: String) => {
+  val fromRecordLine: String => Validated[NonEmptyList[ParseException], RecordLine] = (recordLine: String) => {
     /**
       * ripencc|EU|ipv6|2001:600::|32|19990826|allocated|647c2f10-dda2-4809-88e8-49024f31ad17
       * 0    |1 | 2  |     3    |4 |    5   |  6      | 7 (optional opaque id)
@@ -156,56 +174,59 @@ object ConvertHelpers {
       */
     val components: Array[String] = recordLine.split('|')
 
-    val registry: Validated[List[UnknownRegistryException], Registry] = components(0).toRegistry
+    val registry: Validated[NonEmptyList[UnknownRegistryException], Registry] = components(0).toRegistry
 
-    val countryCode: Validated[List[InvalidValue], Option[String]] = Validated.fromEither {
+    val countryCode: Validated[NonEmptyList[InvalidValue], Option[String]] = Validated.fromEither {
       Try(if (components(1).toString.equals("")) None else Some(components(1).toString))
-        .fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), Right(_: Option[String]))
+        .fold((ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))), Right(_: Option[String]))
     }
 
-    val resourceType: Validated[List[UnknownResourceException], ResourceType] = components(2).toResourceType
+    val resourceType: Validated[NonEmptyList[UnknownResourceException], ResourceType] = components(2).toResourceType
 
-    val firstAddress: Validated[List[InvalidValue], String] = Validated.fromEither {
+    val firstAddress: Validated[NonEmptyList[InvalidValue], String] = Validated.fromEither {
       Try(components(3).toString)
-        .fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), Right(_: String))
+        .fold(
+          (ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))),
+          Right(_: String)
+        )
     }
 
-    val count: Validated[List[InvalidValue], Double] = Validated.fromEither {
+    val count: Validated[NonEmptyList[InvalidValue], Double] = Validated.fromEither {
       Try {
         resourceType match {
           case Validated.Valid(`ipv4`) | Validated.Valid(`asn`) => components(4).toDouble
           case Validated.Valid(`ipv6`) => scala.math.pow(2, 128 - components(4).toInt)
           case Validated.Invalid(er) => throw new Throwable("Resource type unkown")
         }
-      }.fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), Right(_: Double))
+      }.fold((ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))), Right(_: Double))
     }
 
-    val optionalPrefix: Validated[List[InvalidValue], Option[String]] = Validated.fromEither {
+    val optionalPrefix: Validated[NonEmptyList[InvalidValue], Option[String]] = Validated.fromEither {
       Try {
         resourceType match {
           case Validated.Valid(`ipv6`) => Some(s"/${components(4).toInt}")
           case _ => None
         }
-      }.fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), Right(_: Option[String]))
+      }.fold((ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))), Right(_: Option[String]))
     }
 
-    val assignedOrAllocatedDate: Validated[List[InvalidValue], Option[JDate]] = Validated.fromEither {
+    val assignedOrAllocatedDate: Validated[NonEmptyList[InvalidValue], Option[JDate]] = Validated.fromEither {
       Try {
         val dateValue: String = components(5).toString
         if (dateValue.equals("")) None else Some(formatter.parse(dateValue))
-      }.fold((ex: Throwable) => Left(List(InvalidValue(ex, ex.getMessage))), Right(_: Option[JDate]))
+      }.fold((ex: Throwable) => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage))), Right(_: Option[JDate]))
     }
 
-    val opaqueId: Validated[List[InvalidValue], Option[String]] = Validated.fromEither {
+    val opaqueId: Validated[NonEmptyList[InvalidValue], Option[String]] = Validated.fromEither {
       Try(Some(components(7).toString)).fold({
         case ex: IndexOutOfBoundsException => Right(None)
-        case ex => Left(List(InvalidValue(ex, ex.getMessage)))
+        case ex => Left(NonEmptyList.of(InvalidValue(ex, ex.getMessage)))
       }, Right(_: Some[String]))
     }
 
-    val resourceStatus: Validated[List[UnknownResourceStatusException], ResourceStatus] = components(6).toResourceStatus
+    val resourceStatus: Validated[NonEmptyList[UnknownResourceStatusException], ResourceStatus] = components(6).toResourceStatus
 
-    val resource:Validated[List[ParseException], Resource] = (resourceType, firstAddress, count, optionalPrefix).mapN(Resource)
+    val resource:Validated[NonEmptyList[ParseException], Resource] = (resourceType, firstAddress, count, optionalPrefix).mapN(Resource)
     (registry, countryCode, resourceType, resourceStatus, assignedOrAllocatedDate, resource, opaqueId).mapN(RecordLine)
   }
 }
